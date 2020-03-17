@@ -103,7 +103,6 @@ function onInsertBinaryTree(): void {
     treeDataInputElement.value = ""
 }
 
-
 function render(tree: Tree): void {
     let items: string                                   = ""
     items                                               += "<ul>"
@@ -111,7 +110,6 @@ function render(tree: Tree): void {
     items                                               += "</ul>"
     document.getElementById('binaryTreeItem').innerHTML = items
 }
-
 
 function getRenderElement(item: Tree, elements: string): string {
     elements += "<li><a href='#'>" + item.value + 
@@ -126,7 +124,6 @@ function getRenderElement(item: Tree, elements: string): string {
     elements += "</li>"
     return elements;
 }
-
 
 const treeInput = document.getElementById("inputedNumber");
 
