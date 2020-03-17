@@ -8,8 +8,7 @@ var BinaryTree = /** @class */ (function () {
             return;
         !this.tree ? this.tree = this.initialNewTreeDataSet(this.currentNodeValue)
             : this.tree = this.addNodeWithPosition(this.tree, this.currentNodeValue);
-        this.onSelfBalance(); // this method balance tree ownself           
-        // this.render ()                               // its only make binary tree without balance      
+        this.binarySelfBalance();
     };
     BinaryTree.prototype.addNodeWithPosition = function (tree, currentNodeValue) {
         if (currentNodeValue < tree.value) {
@@ -22,61 +21,52 @@ var BinaryTree = /** @class */ (function () {
         }
         return tree;
     };
-    BinaryTree.prototype.onSelfBalance = function () {
-        var inputedValues = [];
-        inputedValues = this.getAllInputedValueAsArray(this.tree, inputedValues);
-        // inputedValues = this.getRandomArray(10)          // for testing comment out and Click self Balnce button
-        if (inputedValues.length) {
-            inputedValues = inputedValues.sort(function (a, b) { return a - b; });
-        }
-        else {
-            alert('Please Input some data first.');
-            return;
-        }
-        this.balanceBinaryTree(inputedValues);
+    BinaryTree.prototype.binarySelfBalance = function () {
+        var sortedExistingValues = this.getSortedExistingValues();
+        this.makeBalanceBinaryTree(sortedExistingValues);
     };
-    BinaryTree.prototype.balanceBinaryTree = function (inputedValues) {
+    BinaryTree.prototype.makeBalanceBinaryTree = function (existingValues) {
         this.tree = null;
-        this.makeBalanceBinaryTree(inputedValues, 0, inputedValues.length - 1);
-        this.render();
+        this.recursivelyTreeDataSet(existingValues, 0, existingValues.length - 1);
+        render(this.tree);
     };
-    BinaryTree.prototype.makeBalanceBinaryTree = function (inputedValues, startLength, endLength) {
+    BinaryTree.prototype.recursivelyTreeDataSet = function (existingValues, startLength, endLength) {
         if (startLength > endLength)
             return null;
         var centerNode = Math.floor((startLength + endLength) / 2);
-        var centerValue = inputedValues[centerNode];
-        if (!this.tree) {
-            this.tree = this.initialNewTreeDataSet(centerValue);
-        }
-        else {
+        var centerValue = existingValues[centerNode];
+        !this.tree ? this.tree = this.initialNewTreeDataSet(centerValue) :
             this.tree = this.addNodeWithPosition(this.tree, centerValue);
-        }
-        this.makeBalanceBinaryTree(inputedValues, startLength, centerNode - 1);
-        this.makeBalanceBinaryTree(inputedValues, centerNode + 1, endLength);
+        this.recursivelyTreeDataSet(existingValues, startLength, centerNode - 1);
+        this.recursivelyTreeDataSet(existingValues, centerNode + 1, endLength);
         return centerValue;
     };
-    BinaryTree.prototype.getAllInputedValueAsArray = function (tree, inputedValues, deletedId) {
-        if (deletedId === void 0) { deletedId = null; }
-        if (tree) {
-            if (tree.id !== deletedId) {
-                inputedValues = inputedValues.concat(tree.value);
-            }
-            tree.leftChild ? inputedValues = this.getAllInputedValueAsArray(tree.leftChild, inputedValues, deletedId) : null;
-            tree.rightChild ? inputedValues = this.getAllInputedValueAsArray(tree.rightChild, inputedValues, deletedId) : null;
-        }
-        return inputedValues;
-    };
-    BinaryTree.prototype["delete"] = function (id) {
-        var inputedValues = [];
-        inputedValues = this.getAllInputedValueAsArray(this.tree, inputedValues, id);
-        if (inputedValues.length) {
-            inputedValues = inputedValues.sort(function (a, b) { return a - b; });
+    BinaryTree.prototype.getSortedExistingValues = function (id) {
+        if (id === void 0) { id = null; }
+        var existingValues = this.getAllExistingValues(this.tree, [], id);
+        if (existingValues.length) {
+            existingValues = existingValues.sort(function (a, b) { return a - b; });
         }
         else {
             alert('Please Input some data first.');
             return;
         }
-        this.balanceBinaryTree(inputedValues);
+        return existingValues;
+    };
+    BinaryTree.prototype.getAllExistingValues = function (tree, existingValues, deletedId) {
+        if (deletedId === void 0) { deletedId = null; }
+        if (tree) {
+            if (tree.id !== deletedId) {
+                existingValues = existingValues.concat(tree.value);
+            }
+            tree.leftChild ? existingValues = this.getAllExistingValues(tree.leftChild, existingValues, deletedId) : null;
+            tree.rightChild ? existingValues = this.getAllExistingValues(tree.rightChild, existingValues, deletedId) : null;
+        }
+        return existingValues;
+    };
+    BinaryTree.prototype["delete"] = function (id) {
+        var sortedExistingValues = this.getSortedExistingValues(id);
+        this.makeBalanceBinaryTree(sortedExistingValues);
     };
     BinaryTree.prototype.initialNewTreeDataSet = function (currentNodeValue) {
         return {
@@ -86,32 +76,6 @@ var BinaryTree = /** @class */ (function () {
             leftChild: null
         };
     };
-    BinaryTree.prototype.getRenderElement = function (item, elements) {
-        elements += "<li><a href='#'>" + item.value +
-            "</a> <button class='deleteBtn' onclick='binaryTree.delete(" + item.id + ");'>x</button>";
-        if (item.leftChild || item.rightChild) {
-            elements += "<ul>";
-            item.leftChild ? elements += this.getRenderElement(item.leftChild, "") : "";
-            item.rightChild ? elements += this.getRenderElement(item.rightChild, "") : "";
-            elements += "</ul>";
-        }
-        elements += "</li>";
-        return elements;
-    };
-    BinaryTree.prototype.getRandomArray = function (size) {
-        var randomArray = [];
-        for (var i = 1; i <= size; i++) {
-            randomArray = randomArray.concat(Math.floor(Math.random() * 1000));
-        }
-        return randomArray;
-    };
-    BinaryTree.prototype.render = function () {
-        var items = "";
-        items += "<ul>";
-        items += this.getRenderElement(this.tree, "");
-        items += "</ul>";
-        document.getElementById('binaryTreeItem').innerHTML = items;
-    };
     return BinaryTree;
 }());
 var binaryTree = new BinaryTree();
@@ -120,8 +84,24 @@ function onInsertBinaryTree() {
     binaryTree.insert(treeDataInputElement.valueAsNumber);
     treeDataInputElement.value = "";
 }
-function onBalanceBinaryTree() {
-    binaryTree.onSelfBalance();
+function render(tree) {
+    var items = "";
+    items += "<ul>";
+    items += getRenderElement(tree, "");
+    items += "</ul>";
+    document.getElementById('binaryTreeItem').innerHTML = items;
+}
+function getRenderElement(item, elements) {
+    elements += "<li><a href='#'>" + item.value +
+        "</a> <button class='deleteBtn' onclick='binaryTree.delete(" + item.id + ");'>x</button>";
+    if (item.leftChild || item.rightChild) {
+        elements += "<ul>";
+        item.leftChild ? elements += getRenderElement(item.leftChild, "") : "";
+        item.rightChild ? elements += getRenderElement(item.rightChild, "") : "";
+        elements += "</ul>";
+    }
+    elements += "</li>";
+    return elements;
 }
 var treeInput = document.getElementById("inputedNumber");
 treeInput.addEventListener("keyup", function (event) {

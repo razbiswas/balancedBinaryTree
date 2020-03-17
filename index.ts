@@ -14,8 +14,8 @@ class BinaryTree {
         if(!this.currentNodeValue) return;
         !this.tree ? this.tree = this.initialNewTreeDataSet(this.currentNodeValue)
                    : this.tree = this.addNodeWithPosition(this.tree, this.currentNodeValue)
-        this.onSelfBalance()                            // it self balance. render method only make Binary tree           
-        // this.render ()                                     
+        this.binarySelfBalance()                                       
+                                           
     }
 
     addNodeWithPosition(tree: Tree, currentNodeValue: number): Tree {
@@ -29,59 +29,56 @@ class BinaryTree {
         return tree;
     }
     
-    onSelfBalance() : void{
-        let inputedValues:number[] = []
-        inputedValues              = this.getAllInputedValueAsArray(this.tree, inputedValues)
-        // inputedValues = this.getRandomArray(10)          // for testing comment out and Click self Balnce button
-        if (inputedValues.length) {
-            inputedValues = inputedValues.sort((a,b) => a - b);
-        }else {
-            alert ('Please Input some data first.'); 
-            return;
-        }
-        this.balanceBinaryTree(inputedValues)
+    binarySelfBalance() : void {
+        let sortedExistingValues: number[] = this.getSortedExistingValues()
+        this.makeBalanceBinaryTree(sortedExistingValues)
     }
 
-    balanceBinaryTree(inputedValues: number[]): void {
+    makeBalanceBinaryTree(existingValues: number[]): void {
         this.tree = null;   
-        this.makeBalanceBinaryTree(inputedValues, 0, inputedValues.length -1)
-        this.render()
+        this.recursivelyTreeDataSet(existingValues, 0, existingValues.length -1)
+        render(this.tree)
     }
     
-    makeBalanceBinaryTree(inputedValues: number[], startLength: number, endLength: number): number {
+    recursivelyTreeDataSet(existingValues: number[], startLength: number, endLength: number): number {
         if (startLength > endLength) return null
         let centerNode: number  = Math.floor((startLength + endLength) / 2)
-        let centerValue: number = inputedValues[centerNode]
+        let centerValue: number = existingValues[centerNode]
 
         !this.tree ? this.tree = this.initialNewTreeDataSet(centerValue) :
                      this.tree = this.addNodeWithPosition(this.tree, centerValue)
 
-        this.makeBalanceBinaryTree(inputedValues, startLength, centerNode - 1)
-        this.makeBalanceBinaryTree(inputedValues, centerNode + 1, endLength)
+        this.recursivelyTreeDataSet(existingValues, startLength, centerNode - 1)
+        this.recursivelyTreeDataSet(existingValues, centerNode + 1, endLength)
         return centerValue
     }
-
-    getAllInputedValueAsArray(tree: Tree, inputedValues: number[], deletedId: number = null): number[] {
-        if(tree){
-            if (tree.id !== deletedId){
-                inputedValues = inputedValues.concat(tree.value)  
-            }
-            tree.leftChild  ? inputedValues = this.getAllInputedValueAsArray(tree.leftChild, inputedValues, deletedId)  : null
-            tree.rightChild ? inputedValues = this.getAllInputedValueAsArray(tree.rightChild, inputedValues, deletedId) : null
-        }
-        return inputedValues
-    }
-
-    delete(id: number): void {
-        let inputedValues:number[] = []
-        inputedValues              = this.getAllInputedValueAsArray(this.tree, inputedValues, id)
-        if (inputedValues.length) {
-            inputedValues = inputedValues.sort((a,b) => a - b);
-        }else {
+    getSortedExistingValues(id: number = null): number[] {
+        let existingValues: number[] = this.getAllExistingValues(this.tree, [], id)
+        if (existingValues.length) {
+            existingValues = existingValues.sort((a,b) => a - b);
+        } else {
             alert ('Please Input some data first.'); 
             return;
         }
-        this.balanceBinaryTree(inputedValues)
+        return existingValues
+    }
+
+    getAllExistingValues(tree: Tree, existingValues: number[], deletedId: number = null): number[] {
+        if(tree){
+            if (tree.id !== deletedId){
+                existingValues = existingValues.concat(tree.value)  
+            }
+            tree.leftChild  ? existingValues = this.getAllExistingValues(tree.leftChild, existingValues, deletedId)  : null
+            tree.rightChild ? existingValues = this.getAllExistingValues(tree.rightChild, existingValues, deletedId) : null
+        }
+        return existingValues
+    }
+
+
+    delete(id: number): void {
+        let sortedExistingValues: number[] = this.getSortedExistingValues(id)
+
+        this.makeBalanceBinaryTree(sortedExistingValues)
 
     }
 
@@ -94,35 +91,7 @@ class BinaryTree {
         }
     }
 
-    getRenderElement(item: Tree, elements: string): string {
-        elements += "<li><a href='#'>" + item.value + 
-        "</a> <button class='deleteBtn' onclick='binaryTree.delete("+item.id+");'>x</button>"
-
-        if (item.leftChild || item.rightChild) {
-            elements += "<ul>"
-            item.leftChild ? elements   += this.getRenderElement(item.leftChild, "") : ""
-            item.rightChild ? elements  += this.getRenderElement(item.rightChild, "") : ""
-            elements                    += "</ul>"
-        }
-        elements += "</li>"
-        return elements;
-    }
     
-    getRandomArray(size: number): number[] {
-        let randomArray: number[] = []
-        for (let i: number = 1; i <= size; i++) {
-            randomArray = randomArray.concat(Math.floor(Math.random() * 1000))
-        }
-        return randomArray;
-    }
-
-    render(): void {
-        let items: string                                   = ""
-        items                                               += "<ul>"
-        items                                               += this.getRenderElement(this.tree, "")
-        items                                               += "</ul>"
-        document.getElementById('binaryTreeItem').innerHTML = items
-    }
 
 }
 
@@ -134,8 +103,28 @@ function onInsertBinaryTree(): void {
     treeDataInputElement.value = ""
 }
 
-function onBalanceBinaryTree(): void {
-    binaryTree.onSelfBalance()
+
+function render(tree: Tree): void {
+    let items: string                                   = ""
+    items                                               += "<ul>"
+    items                                               += getRenderElement(tree, "")
+    items                                               += "</ul>"
+    document.getElementById('binaryTreeItem').innerHTML = items
+}
+
+
+function getRenderElement(item: Tree, elements: string): string {
+    elements += "<li><a href='#'>" + item.value + 
+    "</a> <button class='deleteBtn' onclick='binaryTree.delete("+item.id+");'>x</button>"
+
+    if (item.leftChild || item.rightChild) {
+        elements += "<ul>"
+        item.leftChild ? elements   += getRenderElement(item.leftChild, "") : ""
+        item.rightChild ? elements  += getRenderElement(item.rightChild, "") : ""
+        elements                    += "</ul>"
+    }
+    elements += "</li>"
+    return elements;
 }
 
 
