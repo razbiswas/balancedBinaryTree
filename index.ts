@@ -14,8 +14,8 @@ class BinaryTree {
         if(!this.currentNodeValue) return;
         !this.tree ? this.tree = this.initialNewTreeDataSet(this.currentNodeValue)
                    : this.tree = this.addNodeWithPosition(this.tree, this.currentNodeValue)
-        this.onSelfBalance()                            // this method balance tree ownself           
-        // this.render ()                               // its only make binary tree without balance      
+        this.onSelfBalance()                            // it self balance. render method only make Binary tree           
+        // this.render ()                                     
     }
 
     addNodeWithPosition(tree: Tree, currentNodeValue: number): Tree {
@@ -53,11 +53,9 @@ class BinaryTree {
         let centerNode: number  = Math.floor((startLength + endLength) / 2)
         let centerValue: number = inputedValues[centerNode]
 
-        if (!this.tree) {
-            this.tree = this.initialNewTreeDataSet(centerValue)
-        } else {
-            this.tree = this.addNodeWithPosition(this.tree, centerValue)
-        }
+        !this.tree ? this.tree = this.initialNewTreeDataSet(centerValue) :
+                     this.tree = this.addNodeWithPosition(this.tree, centerValue)
+
         this.makeBalanceBinaryTree(inputedValues, startLength, centerNode - 1)
         this.makeBalanceBinaryTree(inputedValues, centerNode + 1, endLength)
         return centerValue
@@ -99,6 +97,7 @@ class BinaryTree {
     getRenderElement(item: Tree, elements: string): string {
         elements += "<li><a href='#'>" + item.value + 
         "</a> <button class='deleteBtn' onclick='binaryTree.delete("+item.id+");'>x</button>"
+
         if (item.leftChild || item.rightChild) {
             elements += "<ul>"
             item.leftChild ? elements   += this.getRenderElement(item.leftChild, "") : ""
