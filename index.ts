@@ -52,6 +52,7 @@ class BinaryTree {
         this.recursivelyTreeDataSet(existingValues, centerNode + 1, endLength)
         return centerValue
     }
+
     getSortedExistingValues(id: number = null): number[] {
         let existingValues: number[] = this.getAllExistingValues(this.tree, [], id)
         if (existingValues.length) {
@@ -77,9 +78,7 @@ class BinaryTree {
 
     delete(id: number): void {
         let sortedExistingValues: number[] = this.getSortedExistingValues(id)
-
         this.makeBalanceBinaryTree(sortedExistingValues)
-
     }
 
     initialNewTreeDataSet(currentNodeValue: number) : Tree {
@@ -111,6 +110,15 @@ function render(tree: Tree): void {
     document.getElementById('binaryTreeItem').innerHTML = items
 }
 
+const treeInput = document.getElementById("inputedNumber");
+
+treeInput.addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      document.getElementById("addBtn").click();
+    }
+});
+
 function getRenderElement(item: Tree, elements: string): string {
     elements += "<li><a href='#'>" + item.value + 
     "</a> <button class='deleteBtn' onclick='binaryTree.delete("+item.id+");'>x</button>"
@@ -125,12 +133,5 @@ function getRenderElement(item: Tree, elements: string): string {
     return elements;
 }
 
-const treeInput = document.getElementById("inputedNumber");
 
-treeInput.addEventListener("keyup", function(event) {
-    if (event.keyCode === 13) {
-      event.preventDefault();
-      document.getElementById("addBtn").click();
-    }
-  });
   

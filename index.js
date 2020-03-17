@@ -91,6 +91,13 @@ function render(tree) {
     items += "</ul>";
     document.getElementById('binaryTreeItem').innerHTML = items;
 }
+var treeInput = document.getElementById("inputedNumber");
+treeInput.addEventListener("keyup", function (event) {
+    if (event.keyCode === 13) {
+        event.preventDefault();
+        document.getElementById("addBtn").click();
+    }
+});
 function getRenderElement(item, elements) {
     elements += "<li><a href='#'>" + item.value +
         "</a> <button class='deleteBtn' onclick='binaryTree.delete(" + item.id + ");'>x</button>";
@@ -103,10 +110,3 @@ function getRenderElement(item, elements) {
     elements += "</li>";
     return elements;
 }
-var treeInput = document.getElementById("inputedNumber");
-treeInput.addEventListener("keyup", function (event) {
-    if (event.keyCode === 13) {
-        event.preventDefault();
-        document.getElementById("addBtn").click();
-    }
-});
