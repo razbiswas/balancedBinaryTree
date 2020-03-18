@@ -90,9 +90,6 @@ class BinaryTree {
             leftChild:  null 
         }
     }
-
-    
-
 }
 
 const binaryTree = new BinaryTree()
