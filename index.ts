@@ -14,6 +14,7 @@ class BinaryTree {
         if(!this.currentNodeValue) return;
         !this.tree ? this.tree = this.initialNewTreeDataSet(this.currentNodeValue)
                    : this.tree = this.addNodeWithPosition(this.tree, this.currentNodeValue)
+        // render(this.tree)                                        // only binary Tree           
         this.binarySelfBalance()                                       
                                            
     }

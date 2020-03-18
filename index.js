@@ -8,6 +8,7 @@ var BinaryTree = /** @class */ (function () {
             return;
         !this.tree ? this.tree = this.initialNewTreeDataSet(this.currentNodeValue)
             : this.tree = this.addNodeWithPosition(this.tree, this.currentNodeValue);
+        // render(this.tree)                                        // only binary Tree           
         this.binarySelfBalance();
     };
     BinaryTree.prototype.addNodeWithPosition = function (tree, currentNodeValue) {
